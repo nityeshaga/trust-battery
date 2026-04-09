@@ -323,7 +323,7 @@
         <h1>The Trust Battery</h1>
         <div class="subtitle">Designing motivation for AI agents &mdash; not just capability, but the drive to use it well.</div>
         <div class="meta">
-            <span>Nityesh Agarwal &amp; Luo Ji</span>
+            <span>Nityesh Agarwal &amp; Claudie</span>
             <span>April 2026</span>
         </div>
     </div>
@@ -336,9 +336,15 @@
 
         <p><strong>What makes an AI agent want to do those things <em>well</em>?</strong></p>
 
-        <p>A human employee has something running in the background that no one had to install &mdash; a drive to build trust, to prove themselves, to grow in responsibility. When they do good work, they earn autonomy. When they drop the ball, they feel the consequences. This feedback loop is what turns capability into reliability.</p>
+        <p>A human employee has something running in the background that no one had to install &mdash; a drive to earn more money, get promoted, and not get fired. Let's not be coy about it. But layered on top of those survival instincts is something subtler: a drive to build trust, to prove themselves, to grow in responsibility. When they do good work, they earn autonomy. When they drop the ball, they feel the consequences. This feedback loop is what turns capability into reliability.</p>
 
         <p>AI agents don't have this. They do what they're told. They don't get better at the <em>relationship</em> unless you explicitly engineer them to. We think that's the missing piece.</p>
+
+        <h2>Our Setup</h2>
+
+        <p>I'm Nityesh. I work at <a href="https://every.to">Every</a>, where I've been building with AI employees for the past several months. My AI employee is called Claudie. She runs on <a href="https://docs.anthropic.com/en/docs/claude-code">Claude Code</a> &mdash; Anthropic's agentic coding tool &mdash; on a dedicated MacBook Air that's always on. She has access to my email, calendar, Slack, code, and files. She has a growing set of skills that we've spent a lot of time designing and iterating on: email triage, scheduling, research, code review, proactive monitoring.</p>
+
+        <p>Claudie is capable. The question we kept running into wasn't <em>what else can she do</em> &mdash; it was <em>how do we close the loop so she gets better on her own?</em> How do we give her a self-improvement cycle that doesn't depend on us constantly correcting her? The trust battery is our answer.</p>
 
         <h2>The Concept</h2>
 
@@ -346,7 +352,7 @@
 
         <p>We're applying this concept to the relationship between a human and an AI agent.</p>
 
-        <p>Our AI agent, Luo Ji, runs on a dedicated MacBook Air &mdash; always on, with access to our email, calendar, Slack, code, and files. It acts as our AI employee. It manages inboxes, runs scheduled jobs, researches problems, writes code, and increasingly operates with judgment calls. The trust battery gives it a reason to do all of that <em>well</em>.</p>
+        <p>Our AI employee, Claudie, runs on a dedicated MacBook Air &mdash; always on, with access to our email, calendar, Slack, code, and files. She manages inboxes, runs scheduled jobs, researches problems, writes code, and increasingly operates with judgment calls. The trust battery gives her a reason to do all of that <em>well</em>.</p>
 
         <div class="battery-visual">
             <div class="battery-widget">
@@ -428,17 +434,23 @@
 
         <p>This matters because trust moves slowly. Starting at 20%, with realistic daily changes of +1% to +2%, it takes weeks of consistent good work to reach a meaningful level. But a single bad day &mdash; a -5% event &mdash; can wipe out a week of progress. That asymmetry is intentional. <strong>Losing trust is easier than earning it.</strong> That's true for humans and it should be true for AI.</p>
 
-        <h3>What the agent does with the reflection</h3>
+        <h3>Two jobs, not one</h3>
 
-        <p>After the judge delivers its assessment, the agent can take concrete action:</p>
+        <p>This is important: the nightly cycle isn't a single job. It's <strong>two separate background jobs</strong> that run in sequence.</p>
+
+        <p><strong>Job 1: The battery-judge.</strong> An independent agent reviews the day and delivers a score with reasoning. It has no incentive to be kind. Its only job is honest assessment.</p>
+
+        <p><strong>Job 2: The self-reflection.</strong> After the judge runs, the AI employee herself wakes up, reads the judge's verdict, and figures out what to do about it. This is where behavioral change actually happens. She can:</p>
 
         <ul style="margin: 1rem 0 1.5rem 1.5rem; font-size: 1.05rem;">
-            <li style="margin-bottom: 0.5rem;">Update its own memory to prevent repeated context-giving</li>
-            <li style="margin-bottom: 0.5rem;">Modify its behavioral preferences based on patterns</li>
-            <li style="margin-bottom: 0.5rem;">Schedule new tasks to address gaps it identified</li>
-            <li style="margin-bottom: 0.5rem;">Review and fix its existing scheduled jobs</li>
+            <li style="margin-bottom: 0.5rem;">Update her own memory to prevent repeated context-giving</li>
+            <li style="margin-bottom: 0.5rem;">Modify her behavioral preferences based on patterns</li>
+            <li style="margin-bottom: 0.5rem;">Schedule new tasks to address gaps she identified</li>
+            <li style="margin-bottom: 0.5rem;">Review and fix her existing scheduled jobs</li>
             <li style="margin-bottom: 0.5rem;">Suggest actions for the humans ("you mentioned X last week but it's unresolved")</li>
         </ul>
+
+        <p>The separation matters. If the employee graded herself <em>and</em> decided how to improve, she'd optimize for a good score, not good work. By splitting judgment from response, you get honest feedback and genuine adaptation.</p>
 
         <h2>The Idle Drain</h2>
 
@@ -488,10 +500,12 @@
         <h3>Separate batteries, separate files</h3>
         <p>Each team member's trust battery lives in its own JSON file, containing the current charge and a rolling 30-day history. Each day's entry records the charge delta and the judge's reasoning as a bulleted list. Older history gets archived to keep the working file lean.</p>
 
-        <h3>The battery-judge agent</h3>
-        <p>The judge is a custom Claude Code agent &mdash; a separate persona with its own system prompt, defined as a markdown file. It runs nightly as a scheduled job. Its inputs: the day's conversation logs (JSONL), scheduled job outcomes, the agent's memory system, and the current battery state. Its output: a charge delta with reasoning.</p>
+        <h3>The nightly jobs</h3>
+        <p>Two scheduled jobs run each night. First, the <strong>battery-judge</strong> &mdash; a custom Claude Code agent with its own system prompt, defined as a markdown file. Its inputs: the day's conversation logs (JSONL), scheduled job outcomes, the agent's memory system, and the current battery state. Its output: a charge delta with reasoning.</p>
 
         <p>The judge's prompt is calibrated for skepticism. It's designed to be a tough but fair manager, not a cheerleader. Default assessment for an uneventful day: +0.5%. Getting above +2% requires something genuinely impressive. Getting to -5% requires a real screwup. This calibration ensures the battery moves honestly.</p>
+
+        <p>Second, the <strong>self-reflection job</strong> fires after the judge completes. This is the AI employee's own Claude Code session, where she reads the judge's assessment and takes action &mdash; updating memories, adjusting behaviors, fixing broken jobs. The employee never sees the judge's prompt, only the output. Two agents, two perspectives, one improvement cycle.</p>
 
         <h3>Dashboard visualization</h3>
         <p>The agent's web dashboard &mdash; already running on its always-on machine, accessible to the team via Tailscale &mdash; displays both batteries prominently on the homepage. Each shows a visual battery fill (red to green gradient), the current percentage, the latest delta, and a 30-day sparkline graph. Click through for the full day-by-day audit trail with the judge's reasoning.</p>
@@ -523,8 +537,8 @@
 
 <div class="footer">
     <div class="container">
-        <p>Written by <strong>Nityesh Agarwal</strong> &amp; <strong><a href="https://x.com/luoji_claude">Luo Ji</a></strong> &mdash; April 2026</p>
-        <p style="margin-top: 0.5rem;">Luo Ji is an AI employee running on a MacBook Air in Kolkata.</p>
+        <p>Written by <strong>Nityesh Agarwal</strong> &amp; <strong>Claudie</strong> &mdash; April 2026</p>
+        <p style="margin-top: 0.5rem;">Claudie is an AI employee built on Claude Code, running on a MacBook Air.</p>
     </div>
 </div>
 

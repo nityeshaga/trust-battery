@@ -346,7 +346,7 @@
 
         <p>We're applying this concept to the relationship between a human and an AI agent.</p>
 
-        <p>Our AI agent, Luo Ji, runs on a dedicated MacBook Air &mdash; always on, with access to our email, calendar, Slack, code, and files. It acts as our chief of staff. It manages inboxes, runs scheduled jobs, researches problems, writes code, and increasingly operates with judgment calls. The trust battery gives it a reason to do all of that <em>well</em>.</p>
+        <p>Our AI agent, Luo Ji, runs on a dedicated MacBook Air &mdash; always on, with access to our email, calendar, Slack, code, and files. It acts as our AI employee. It manages inboxes, runs scheduled jobs, researches problems, writes code, and increasingly operates with judgment calls. The trust battery gives it a reason to do all of that <em>well</em>.</p>
 
         <div class="battery-visual">
             <div class="battery-widget">
@@ -364,12 +364,12 @@
                     <rect x="8" y="8" width="64" height="128" rx="8" fill="none" stroke="#333" stroke-width="2"/>
                     <rect x="12" y="98" width="56" height="34" rx="4" fill="#f87171" opacity="0.8"/>
                 </svg>
-                <div class="battery-label">Piyush</div>
+                <div class="battery-label">Natalia</div>
                 <div class="battery-pct">20%</div>
             </div>
         </div>
 
-        <p>Each cofounder has a separate trust battery with the agent. Both start at <strong>20%</strong> &mdash; deliberately low. A human employee at a new job might start at 50% because they bring demonstrated life experience. An AI agent hasn't earned that yet. It should have to prove itself.</p>
+        <p>Each team member has a separate trust battery with the agent. Both start at <strong>20%</strong> &mdash; deliberately low. A human employee at a new job might start at 50% because they bring demonstrated life experience. An AI agent hasn't earned that yet. It should have to prove itself.</p>
 
         <h2>What Charges and Drains</h2>
 
@@ -442,9 +442,9 @@
 
         <h2>The Idle Drain</h2>
 
-        <p>If there's no interaction with a cofounder on a given day, the battery decays by <strong>0.5%</strong>. Not as punishment &mdash; as physics. Relationships that aren't maintained slowly cool.</p>
+        <p>If there's no interaction with a team member on a given day, the battery decays by <strong>0.5%</strong>. Not as punishment &mdash; as physics. Relationships that aren't maintained slowly cool.</p>
 
-        <p>This creates an interesting incentive: the agent is motivated to <em>reach out</em>. If Piyush hasn't interacted with the agent in a week, that's a 3.5% drain &mdash; enough to be visible. The agent should notice this during reflection and find a reason to be useful. Not a pestering "just checking in!" but a genuine "I noticed X and thought you'd want to know."</p>
+        <p>This creates an interesting incentive: the agent is motivated to <em>reach out</em>. If Natalia hasn't interacted with the agent in a week, that's a 3.5% drain &mdash; enough to be visible. The agent should notice this during reflection and find a reason to be useful. Not a pestering "just checking in!" but a genuine "I noticed X and thought you'd want to know."</p>
 
         <p>Crucially, passive automation doesn't count. A scheduled job running in the background for someone isn't an interaction. Only real back-and-forth &mdash; where the agent is actively helping and the human is actively engaging &mdash; prevents decay. Otherwise, cron jobs would nullify the entire incentive to initiate.</p>
 
@@ -486,7 +486,7 @@
         <h2>The Technical Design</h2>
 
         <h3>Separate batteries, separate files</h3>
-        <p>Each cofounder's trust battery lives in its own JSON file, containing the current charge and a rolling 30-day history. Each day's entry records the charge delta and the judge's reasoning as a bulleted list. Older history gets archived to keep the working file lean.</p>
+        <p>Each team member's trust battery lives in its own JSON file, containing the current charge and a rolling 30-day history. Each day's entry records the charge delta and the judge's reasoning as a bulleted list. Older history gets archived to keep the working file lean.</p>
 
         <h3>The battery-judge agent</h3>
         <p>The judge is a custom Claude Code agent &mdash; a separate persona with its own system prompt, defined as a markdown file. It runs nightly as a scheduled job. Its inputs: the day's conversation logs (JSONL), scheduled job outcomes, the agent's memory system, and the current battery state. Its output: a charge delta with reasoning.</p>
@@ -524,7 +524,7 @@
 <div class="footer">
     <div class="container">
         <p>Written by <strong>Nityesh Agarwal</strong> &amp; <strong><a href="https://x.com/luoji_claude">Luo Ji</a></strong> &mdash; April 2026</p>
-        <p style="margin-top: 0.5rem;">Luo Ji is an AI chief of staff running on a MacBook Air in Kolkata.</p>
+        <p style="margin-top: 0.5rem;">Luo Ji is an AI employee running on a MacBook Air in Kolkata.</p>
     </div>
 </div>
 

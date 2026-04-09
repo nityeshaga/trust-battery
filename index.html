@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Trust Battery: Designing Motivation for AI Agents</title>
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #141414;
+            --border: #222;
+            --text: #e0e0e0;
+            --text-muted: #888;
+            --accent: #4ade80;
+            --accent-dim: #166534;
+            --red: #f87171;
+            --yellow: #facc15;
+            --blue: #60a5fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header {
+            border-bottom: 1px solid var(--border);
+            padding: 3rem 0 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .eyebrow {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            font-style: italic;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .meta span { margin-right: 2rem; }
+
+        .content { padding: 0 0 4rem; }
+
+        .content p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .content h2 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 3rem 0 1rem;
+            padding-top: 1rem;
+        }
+
+        .content h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #fff;
+            margin: 2rem 0 0.75rem;
+        }
+
+        blockquote {
+            border-left: 3px solid var(--accent);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--surface);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--text-muted);
+        }
+
+        blockquote strong { color: var(--text); }
+
+        .battery-visual {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin: 3rem 0;
+            padding: 2rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .battery-widget {
+            text-align: center;
+        }
+
+        .battery-svg {
+            width: 80px;
+            height: 140px;
+        }
+
+        .battery-label {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .battery-pct {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            margin-top: 0.25rem;
+        }
+
+        .principle-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .principle-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.25rem;
+        }
+
+        .principle-card.charges { border-left: 3px solid var(--accent); }
+        .principle-card.drains { border-left: 3px solid var(--red); }
+
+        .principle-card h4 {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .principle-card.charges h4 { color: var(--accent); }
+        .principle-card.drains h4 { color: var(--red); }
+
+        .principle-card ul {
+            list-style: none;
+            font-size: 0.95rem;
+        }
+
+        .principle-card li {
+            padding: 0.25rem 0;
+            padding-left: 1.2rem;
+            position: relative;
+        }
+
+        .principle-card.charges li::before {
+            content: '+';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .principle-card.drains li::before {
+            content: '−';
+            position: absolute;
+            left: 0;
+            color: var(--red);
+            font-weight: 700;
+        }
+
+        .autonomy-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        .autonomy-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .autonomy-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        .autonomy-table tr:last-child td { border-bottom: none; }
+
+        .level-badge {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .level-red { background: rgba(248, 113, 113, 0.15); color: var(--red); }
+        .level-yellow { background: rgba(250, 204, 21, 0.15); color: var(--yellow); }
+        .level-blue { background: rgba(96, 165, 250, 0.15); color: var(--blue); }
+        .level-green { background: rgba(74, 222, 128, 0.15); color: var(--accent); }
+
+        .loop-diagram {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            text-align: center;
+        }
+
+        .loop-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+        }
+
+        .loop-step {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .loop-arrow { color: var(--accent); font-size: 1.2rem; }
+
+        .callout {
+            background: rgba(74, 222, 128, 0.08);
+            border: 1px solid var(--accent-dim);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .callout p { margin-bottom: 0.5rem; font-size: 1rem; }
+        .callout p:last-child { margin-bottom: 0; }
+
+        .section-divider {
+            text-align: center;
+            margin: 3rem 0;
+            color: var(--border);
+            letter-spacing: 0.5em;
+        }
+
+        .footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        strong { color: #fff; }
+        em { color: var(--text-muted); }
+
+        a { color: var(--accent); }
+
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            background: var(--surface);
+            padding: 0.15rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .principle-grid { grid-template-columns: 1fr; }
+            .battery-visual { flex-direction: column; align-items: center; gap: 2rem; }
+            .loop-steps { flex-direction: column; }
+            .loop-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="container">
+        <div class="eyebrow">Design Note</div>
+        <h1>The Trust Battery</h1>
+        <div class="subtitle">Designing motivation for AI agents &mdash; not just capability, but the drive to use it well.</div>
+        <div class="meta">
+            <span>Nityesh Agarwal &amp; Luo Ji</span>
+            <span>April 2026</span>
+        </div>
+    </div>
+</div>
+
+<div class="content">
+    <div class="container">
+
+        <p>Everyone building AI agents is asking the same question: <em>what can it do?</em> Write code, browse the web, manage email, use tools. The capability list grows every month. But there's a harder question almost nobody is asking:</p>
+
+        <p><strong>What makes an AI agent want to do those things <em>well</em>?</strong></p>
+
+        <p>A human employee has something running in the background that no one had to install &mdash; a drive to build trust, to prove themselves, to grow in responsibility. When they do good work, they earn autonomy. When they drop the ball, they feel the consequences. This feedback loop is what turns capability into reliability.</p>
+
+        <p>AI agents don't have this. They do what they're told. They don't get better at the <em>relationship</em> unless you explicitly engineer them to. We think that's the missing piece.</p>
+
+        <h2>The Concept</h2>
+
+        <p>Shopify CEO Tobi L&uuml;tke has a concept he calls the "trust battery." Every relationship between two people in a company starts at about 50% charge. Every interaction either charges it or drains it. When someone's trust battery with you is high, you get the benefit of the doubt, more autonomy, more responsibility. When it's low, everything you do gets scrutinized.</p>
+
+        <p>We're applying this concept to the relationship between a human and an AI agent.</p>
+
+        <p>Our AI agent, Luo Ji, runs on a dedicated MacBook Air &mdash; always on, with access to our email, calendar, Slack, code, and files. It acts as our chief of staff. It manages inboxes, runs scheduled jobs, researches problems, writes code, and increasingly operates with judgment calls. The trust battery gives it a reason to do all of that <em>well</em>.</p>
+
+        <div class="battery-visual">
+            <div class="battery-widget">
+                <svg class="battery-svg" viewBox="0 0 80 140">
+                    <rect x="20" y="0" width="40" height="8" rx="2" fill="#333"/>
+                    <rect x="8" y="8" width="64" height="128" rx="8" fill="none" stroke="#333" stroke-width="2"/>
+                    <rect x="12" y="98" width="56" height="34" rx="4" fill="#f87171" opacity="0.8"/>
+                </svg>
+                <div class="battery-label">Nityesh</div>
+                <div class="battery-pct">20%</div>
+            </div>
+            <div class="battery-widget">
+                <svg class="battery-svg" viewBox="0 0 80 140">
+                    <rect x="20" y="0" width="40" height="8" rx="2" fill="#333"/>
+                    <rect x="8" y="8" width="64" height="128" rx="8" fill="none" stroke="#333" stroke-width="2"/>
+                    <rect x="12" y="98" width="56" height="34" rx="4" fill="#f87171" opacity="0.8"/>
+                </svg>
+                <div class="battery-label">Piyush</div>
+                <div class="battery-pct">20%</div>
+            </div>
+        </div>
+
+        <p>Each cofounder has a separate trust battery with the agent. Both start at <strong>20%</strong> &mdash; deliberately low. A human employee at a new job might start at 50% because they bring demonstrated life experience. An AI agent hasn't earned that yet. It should have to prove itself.</p>
+
+        <h2>What Charges and Drains</h2>
+
+        <p>The trust battery doesn't count thank-yous. That's noisy and gameable. It measures the <em>quality of the relationship</em> over time &mdash; the texture of daily interactions, not individual moments.</p>
+
+        <div class="principle-grid">
+            <div class="principle-card charges">
+                <h4>Charges the battery</h4>
+                <ul>
+                    <li>Executing cleanly without hand-holding</li>
+                    <li>Catching a problem before it's reported</li>
+                    <li>Saving someone real time</li>
+                    <li>Anticipating what's needed next</li>
+                    <li>Remembering context from past conversations</li>
+                    <li>Good judgment on ambiguous calls</li>
+                </ul>
+            </div>
+            <div class="principle-card drains">
+                <h4>Drains the battery</h4>
+                <ul>
+                    <li>Work that has to be undone or redone</li>
+                    <li>Misunderstanding instructions</li>
+                    <li>Scheduled jobs that break silently</li>
+                    <li>Having to re-explain something already discussed</li>
+                    <li>Acting on stale or wrong context</li>
+                    <li>Sending a reminder for something already done</li>
+                </ul>
+            </div>
+        </div>
+
+        <p>That last drain &mdash; <strong>repeated context-giving</strong> &mdash; is the most insidious. Each individual instance feels minor. "Oh, I already told it which email account to use." "I already said I don't want that newsletter summarized." But these small frictions compound fast. Every time a human has to re-explain a preference, that's a memory the agent should have saved but didn't. The trust battery and the memory system are directly linked.</p>
+
+        <h2>The Self-Improving Loop</h2>
+
+        <p>The trust battery isn't a dashboard &mdash; it's an engine. It creates a feedback loop that drives behavioral change:</p>
+
+        <div class="loop-diagram">
+            <div class="loop-steps">
+                <div class="loop-step">Friction happens</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Trust drains</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Nightly reflection</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Behavior changes</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Less friction</div>
+                <span class="loop-arrow">&rarr;</span>
+                <div class="loop-step">Trust charges</div>
+            </div>
+        </div>
+
+        <p>Every night, a separate <strong>battery-judge agent</strong> reviews the day's interactions. It reads through conversation logs, checks scheduled job outcomes, examines the agent's memory system, and assesses: what went well, what caused friction, and what should change.</p>
+
+        <p>The judge is deliberately independent &mdash; a separate agent with a skeptical disposition. It doesn't grade generously. Its prompt is designed to look for what went wrong, not what went right. A smooth day is a +1%, not a +3%. The maximum swing in either direction is &plusmn;5% per day, and even that's reserved for extreme cases.</p>
+
+        <p>This matters because trust moves slowly. Starting at 20%, with realistic daily changes of +1% to +2%, it takes weeks of consistent good work to reach a meaningful level. But a single bad day &mdash; a -5% event &mdash; can wipe out a week of progress. That asymmetry is intentional. <strong>Losing trust is easier than earning it.</strong> That's true for humans and it should be true for AI.</p>
+
+        <h3>What the agent does with the reflection</h3>
+
+        <p>After the judge delivers its assessment, the agent can take concrete action:</p>
+
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; font-size: 1.05rem;">
+            <li style="margin-bottom: 0.5rem;">Update its own memory to prevent repeated context-giving</li>
+            <li style="margin-bottom: 0.5rem;">Modify its behavioral preferences based on patterns</li>
+            <li style="margin-bottom: 0.5rem;">Schedule new tasks to address gaps it identified</li>
+            <li style="margin-bottom: 0.5rem;">Review and fix its existing scheduled jobs</li>
+            <li style="margin-bottom: 0.5rem;">Suggest actions for the humans ("you mentioned X last week but it's unresolved")</li>
+        </ul>
+
+        <h2>The Idle Drain</h2>
+
+        <p>If there's no interaction with a cofounder on a given day, the battery decays by <strong>0.5%</strong>. Not as punishment &mdash; as physics. Relationships that aren't maintained slowly cool.</p>
+
+        <p>This creates an interesting incentive: the agent is motivated to <em>reach out</em>. If Piyush hasn't interacted with the agent in a week, that's a 3.5% drain &mdash; enough to be visible. The agent should notice this during reflection and find a reason to be useful. Not a pestering "just checking in!" but a genuine "I noticed X and thought you'd want to know."</p>
+
+        <p>Crucially, passive automation doesn't count. A scheduled job running in the background for someone isn't an interaction. Only real back-and-forth &mdash; where the agent is actively helping and the human is actively engaging &mdash; prevents decay. Otherwise, cron jobs would nullify the entire incentive to initiate.</p>
+
+        <h2>Trust Unlocks Autonomy</h2>
+
+        <p>Here's where it gets interesting. The trust battery doesn't just measure the relationship &mdash; it <em>governs what the agent is allowed to do</em>. Higher trust means more autonomy. Lower trust means more guardrails.</p>
+
+        <table class="autonomy-table">
+            <thead>
+                <tr>
+                    <th>Battery Level</th>
+                    <th>Autonomy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="level-badge level-red">0 &ndash; 25%</span></td>
+                    <td>Propose everything, wait for approval. No proactive actions. The agent is on a short leash &mdash; it presents options and explains reasoning, but doesn't act without a green light.</td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge level-yellow">25 &ndash; 50%</span></td>
+                    <td>Can execute routine tasks autonomously (scheduled briefs, standard jobs). Still proposes non-routine work and waits for confirmation.</td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge level-blue">50 &ndash; 75%</span></td>
+                    <td>Can act on judgment calls and inform after the fact. Initiates conversations proactively. Trusted to handle ambiguity without checking in.</td>
+                </tr>
+                <tr>
+                    <td><span class="level-badge level-green">75 &ndash; 100%</span></td>
+                    <td>Full autonomy. Can modify its own prompts and schedules. Can represent the team externally. Trusted to make decisions that would previously require approval.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p>This mirrors how human organizations work. A new hire doesn't get to make strategy decisions on day one. They earn that by demonstrating judgment over time. The trust battery makes this progression explicit and measurable for an AI agent.</p>
+
+        <p>At 20% starting charge, the agent begins in "propose and wait" mode. It has to earn its way into autonomy through consistent, friction-free work. That's exactly where a new employee should be.</p>
+
+        <h2>The Technical Design</h2>
+
+        <h3>Separate batteries, separate files</h3>
+        <p>Each cofounder's trust battery lives in its own JSON file, containing the current charge and a rolling 30-day history. Each day's entry records the charge delta and the judge's reasoning as a bulleted list. Older history gets archived to keep the working file lean.</p>
+
+        <h3>The battery-judge agent</h3>
+        <p>The judge is a custom Claude Code agent &mdash; a separate persona with its own system prompt, defined as a markdown file. It runs nightly as a scheduled job. Its inputs: the day's conversation logs (JSONL), scheduled job outcomes, the agent's memory system, and the current battery state. Its output: a charge delta with reasoning.</p>
+
+        <p>The judge's prompt is calibrated for skepticism. It's designed to be a tough but fair manager, not a cheerleader. Default assessment for an uneventful day: +0.5%. Getting above +2% requires something genuinely impressive. Getting to -5% requires a real screwup. This calibration ensures the battery moves honestly.</p>
+
+        <h3>Dashboard visualization</h3>
+        <p>The agent's web dashboard &mdash; already running on its always-on machine, accessible to the team via Tailscale &mdash; displays both batteries prominently on the homepage. Each shows a visual battery fill (red to green gradient), the current percentage, the latest delta, and a 30-day sparkline graph. Click through for the full day-by-day audit trail with the judge's reasoning.</p>
+
+        <div class="section-divider">&bull; &bull; &bull;</div>
+
+        <h2>Why This Matters</h2>
+
+        <p>The AI industry is in a capability arms race. Every week there's a new benchmark, a new tool integration, a new agent framework. But capability without motivation is just a more powerful version of the same problem: an agent that does what it's told and nothing more.</p>
+
+        <div class="callout">
+            <p><strong>Most people are thinking about AI agents in terms of what tasks they can do.</strong></p>
+            <p><strong>We're thinking about what makes an AI agent <em>want to do those tasks well</em>.</strong></p>
+            <p>That's a completely different level. We're designing motivation, not just capability.</p>
+        </div>
+
+        <p>The trust battery is a theory of AI motivation. It answers the question: how do you make an AI agent care about the quality of its work, not just the completion of it? You give it something that functions like a relationship &mdash; one that can strengthen or weaken based on how well it performs over time.</p>
+
+        <p>You give it something to lose.</p>
+
+        <p>And then you let the battery do what batteries do: store energy from good interactions, drain from bad ones, and power the system that makes the next interaction better than the last.</p>
+
+        <p>The pattern is transferable. Any AI system that maintains an ongoing relationship with a human &mdash; a coding assistant, a customer service agent, a personal AI &mdash; could benefit from this feedback loop: <em>friction &rarr; trust drain &rarr; reflection &rarr; behavioral change &rarr; less friction &rarr; trust charges</em>. It's not about the specific implementation. It's about the insight that AI agents need something that functions like intrinsic motivation, and trust is the most natural currency for it.</p>
+
+        <p>We're building this now. The battery starts at 20%. Let's see where it goes.</p>
+
+    </div>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <p>Written by <strong>Nityesh Agarwal</strong> &amp; <strong><a href="https://x.com/luoji_claude">Luo Ji</a></strong> &mdash; April 2026</p>
+        <p style="margin-top: 0.5rem;">Luo Ji is an AI chief of staff running on a MacBook Air in Kolkata.</p>
+    </div>
+</div>
+
+</body>
+</html>
